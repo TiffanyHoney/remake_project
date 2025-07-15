@@ -5,33 +5,42 @@
     <title>게시글 목록</title>
 </head>
 <body>
-    <h1>입사이클링 게시판📝</h1>
-    <p><a href="{% url 'post_create' %}">✏️ 글 작성하기</a></p>
-
+    <h1>입사이클링 게시판 ✏️</h1>
+    <a href="{% url 'post_create' %}">✍️ 글 작성하기</a>
     <hr>
 
     {% if posts %}
-    <ul>
+        <ul>
         {% for post in posts %}
-        <li>
-            <strong>{{ post.title }}</strong> - {{ post.created_at|date:"Y-m-d H:i" }}<br>
+            <li>
+                <strong>{{ post.title }}</strong> 
+                - {{ post.created_at|date:"Y-m-d H:i" }}<br>
 
-            {% if post.image %}
-                <img src="{{ post.image.url }}" alt="이미지" width="300"><br>
-            {% endif %}
+                {% if post.image %}
+                    <img src="{{ post.image.url }}" alt="이미지" width="300"><br>
+                {% endif %}
 
-            <p>{{ post.content }}</p>
+                <p>{{ post.content }}</p>
 
-            <p>
-                <a href="{% url 'like_post' post.id %}">
-                    ❤️ 좋아요 ({{ post.likes }})
-                </a>
-            </p>
+                <p>
+                    <a href="{% url 'like_post' post.id %}">❤️ 좋아요 ({{ post.likes }})</a>
+                </p>
 
-            <hr>
-        </li>
+                <!-- ✨ 작성자 본인일 경우 수정/삭제 버튼 -->
+                {% if post.author == user %}
+                    <p>
+                        <a href="{% url 'post_edit' post.id %}">✏️ 수정</a>
+                        <form action="{% url 'post_delete' post.id %}" method="post" style="display:inline;">
+                            {% csrf_token %}
+                            <button type="submit" onclick="return confirm('정말 삭제하시겠습니까?');">🗑 삭제</button>
+                        </form>
+                    </p>
+                {% endif %}
+
+                <hr>
+            </li>
         {% endfor %}
-    </ul>
+        </ul>
     {% else %}
         <p>게시글이 없습니다.</p>
     {% endif %}
